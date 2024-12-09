@@ -10,16 +10,7 @@
 <section>
     <form asp-action="BookSeat" method="post">
         <!-- Hämta salonId från dropdown -->
-        <div class="form-group">
-            <label for="SalonId">Select Salon</label>
-            <select id="SalonId" name="SalonId" class="form-control" required>
-                <option value="">-- Select Salon --</option>
-                @foreach (var salon in ViewData["Salons"] as SelectList ?? new SelectList(Enumerable.Empty<SelectListItem>()))
-                {
-                    <option value="@salon.Value">@salon.Text</option>
-                }
-            </select>
-        </div>
+        
 
         <!-- Hämta säten för vald salong -->
         <div class="form-group">

@@ -22,7 +22,14 @@ namespace MVCMovies.Controllers
         // GET: Bookings
         public async Task<IActionResult> Index()
         {
+            // Hämta alla bokningar
             var bookings = await _context.Bookings.ToListAsync();
+
+            // Hämta alla salonger och skapa en SelectList
+            var salons = await _context.Salons.ToListAsync();
+            ViewData["Salons"] = new SelectList(salons, "Id", "Name"); // Skapa SelectList med salongens Id och Name
+
+            // Skicka både bokningar och salonger till vyn
             return View(bookings);
         }
 
@@ -148,6 +155,16 @@ namespace MVCMovies.Controllers
         private bool BookingExists(int id)
         {
             return _context.Bookings.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> GetAvailableSeats(int salonId)
+        {
+            var seats = await _context.Seats
+                                      .Where(s => s.SalonId == salonId && s.Status == "Available")
+                                      .ToListAsync();
+
+            // Returnera stolarna som en JSON-respons
+            return Json(seats.Select(s => new { s.SeatNr, s.Id }));
         }
     }
 }
