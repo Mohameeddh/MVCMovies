@@ -1,0 +1,23 @@
+# .NET build results
+bin/
+obj/
+
+# User-specific files
+.vs/
+.vscode/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows Installer logs
+*.cab
+*.log
+
+# User-specific files for Visual Studio
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
