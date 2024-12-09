@@ -1,0 +1,78 @@
+﻿@model IEnumerable<MVCMovies.Models.Booking>
+
+@{
+    ViewData["Title"] = "Index";
+    var salons = ViewData["Salons"] as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+}
+
+<h1>Book a Seat</h1>
+
+<section>
+    <form asp-action="BookSeat" method="post">
+        <!-- Hämta salonId från dropdown -->
+        <div class="form-group">
+            <label for="SalonId">Select Salon</label>
+            <select id="SalonId" name="SalonId" class="form-control" required>
+                <option value="">-- Select Salon --</option>
+                @foreach (var salon in ViewData["Salons"] as SelectList ?? new SelectList(Enumerable.Empty<SelectListItem>()))
+                {
+                    <option value="@salon.Value">@salon.Text</option>
+                }
+            </select>
+        </div>
+
+        <!-- Hämta säten för vald salong -->
+        <div class="form-group">
+            <label for="SeatNumber">Available Seats</label>
+            <select id="SeatNumber" name="SeatNumber" class="form-control" required>
+                <option>Select a salon first</option>
+            </select>
+        </div>
+
+        <!-- Kundinformation -->
+        <div class="form-group">
+            <label for="customerName">Name</label>
+            <input type="text" name="customerName" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label for="customerEmail">Email</label>
+            <input type="email" name="customerEmail" class="form-control" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Book</button>
+    </form>
+</section>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // När salongen väljs
+            $('#SalonId').change(function () {
+                var salonId = $(this).val();
+                if (salonId) {
+                    // Visa "Loading Seats" medan vi väntar på data
+                    $('#SeatNumber').html('<option>Loading Seats...</option>');
+
+                    // Gör ett AJAX-anrop för att hämta säten
+                    $.getJSON('/Bookings/GetAvailableSeats', { salonId: salonId }, function (data) {
+                        if (data.success) {
+                            // Om det finns säten, fyll dropdownen
+                            var seatOptions = '';
+                            data.seats.forEach(function (seat) {
+                                seatOptions += '<option value="' + seat.SeatNr + '">' + seat.SeatNr + '</option>';
+                            });
+                            $('#SeatNumber').html(seatOptions);
+                        } else {
+                            // Om inga säten finns, visa ett meddelande
+                            $('#SeatNumber').html('<option>No available seats.</option>');
+                        }
+                    });
+                } else {
+                    // Om ingen salong är vald, töm sätesdropdownen
+                    $('#SeatNumber').html('<option>Select a salon first.</option>');
+                }
+            });
+        });
+    </script>
+}
