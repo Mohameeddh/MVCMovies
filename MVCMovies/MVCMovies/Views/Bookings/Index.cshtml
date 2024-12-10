@@ -51,34 +51,34 @@
 
 @section Scripts {
     <script type="text/javascript">
-       $(document).ready(function () {
-    // När salongen väljs
-    $('#SalonId').change(function () {
-        var salonId = $(this).val();
-        if (salonId) {
-            // Visa "Loading Seats" medan vi väntar på data
-            $('#SeatNumber').html('<option>Loading Seats...</option>');
+        $(document).ready(function () {
+            // När salongen väljs
+            $('#SalonId').change(function () {
+                var salonId = $(this).val();
+                if (salonId) {
+                    // Visa "Loading Seats" medan vi väntar på data
+                    $('#SeatNumber').html('<option>Loading Seats...</option>');
 
-            // Gör ett AJAX-anrop för att hämta säten
-            $.getJSON('/Seats/GetAvailableSeats', { salonId: salonId }, function (data) {
-                if (data.length > 0) {
-                    // Om det finns säten, fyll dropdownen
-                    var seatOptions = '';
-                    data.forEach(function (seat) {
-                        // Se till att seat.SeatNr används korrekt
-                        seatOptions += '<option value="' + seat.Id + '">' + seat.SeatNr + '</option>';
+                    // Gör ett AJAX-anrop för att hämta säten
+                    $.getJSON('/Seats/GetAvailableSeats', { salonId: salonId }, function (data) {
+                        if (data.length > 0) {
+                            // Om det finns säten, fyll dropdownen
+                            var seatOptions = '';
+                            data.forEach(function (seatNr) {
+                                // Visa endast SeatNr
+                                seatOptions += '<option value="' + seatNr + '">' + seatNr + '</option>';
+                            });
+                            $('#SeatNumber').html(seatOptions);
+                        } else {
+                            // Om inga säten finns, visa ett meddelande
+                            $('#SeatNumber').html('<option>No available seats.</option>');
+                        }
                     });
-                    $('#SeatNumber').html(seatOptions);
                 } else {
-                    // Om inga säten finns, visa ett meddelande
-                    $('#SeatNumber').html('<option>No available seats.</option>');
+                    // Om ingen salong är vald, töm sätesdropdownen
+                    $('#SeatNumber').html('<option>Select a salon first.</option>');
                 }
             });
-        } else {
-            // Om ingen salong är vald, töm sätesdropdownen
-            $('#SeatNumber').html('<option>Select a salon first.</option>');
-        }
-    });
-});
+        });
     </script>
 }

@@ -165,11 +165,14 @@ namespace MVCMovies.Controllers
         {
             // Hämta alla tillgängliga säten för den valda salongen
             var availableSeats = await _context.Seats
-                .Where(s => s.SalonId == salonId && s.Status == "Available") // Eller vilket statusfält du har för tillgängliga säten
+                .Where(s => s.SalonId == salonId && s.Status == "Available")
+                .Select(s => s.SeatNr) // Hämta endast SeatNr
                 .ToListAsync();
 
-            // Returnera sätena som JSON
-            return Json(availableSeats.Select(s => new { s.SeatNr, s.Id }));
+            // Returnera SeatNr som JSON
+            return Json(availableSeats);
         }
+
+
     }
 }
