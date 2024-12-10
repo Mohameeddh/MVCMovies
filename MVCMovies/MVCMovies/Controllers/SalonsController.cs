@@ -22,7 +22,19 @@ namespace MVCMovies.Controllers
         // GET: Salons
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Salons.ToListAsync());
+            var salons = await _context.Salons
+                .Include(s => s.Seats)  // Inkludera relaterade säten om det behövs
+                .ToListAsync();
+
+            // Kontrollera om det finns salonger och om inte, skapa en tom lista
+            if (salons == null || !salons.Any())
+            {
+                salons = new List<Salon>(); // Skapar en tom lista om inga salonger finns
+            }
+
+            // Skicka salonger som en SelectList till vyn
+            ViewData["Salons"] = new SelectList(salons, "Id", "SalonNr");
+            return View();
         }
 
         // GET: Salons/Details/5

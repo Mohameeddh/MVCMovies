@@ -160,5 +160,16 @@ namespace MVCMovies.Controllers
         {
             return _context.Seats.Any(e => e.Id == id);
         }
+
+        public async Task<IActionResult> GetAvailableSeats(int salonId)
+        {
+            // Hämta alla tillgängliga säten för den valda salongen
+            var availableSeats = await _context.Seats
+                .Where(s => s.SalonId == salonId && s.Status == "Available") // Eller vilket statusfält du har för tillgängliga säten
+                .ToListAsync();
+
+            // Returnera sätena som JSON
+            return Json(availableSeats.Select(s => new { s.SeatNr, s.Id }));
+        }
     }
 }
