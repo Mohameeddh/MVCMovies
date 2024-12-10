@@ -26,6 +26,14 @@
             </select>
         </div>
 
+        <!-- Dropdown för filmer baserat på vald salong -->
+        <div class="form-group">
+            <label for="MovieId">Available Movies</label>
+            <select id="MovieId" name="MovieId" class="form-control" required>
+                <option>Select a salon first</option>
+            </select>
+        </div>
+
         <!-- Hämta säten för vald salong -->
         <div class="form-group">
             <label for="SeatNumber">Available Seats</label>
@@ -56,26 +64,35 @@
             $('#SalonId').change(function () {
                 var salonId = $(this).val();
                 if (salonId) {
-                    // Visa "Loading Seats" medan vi väntar på data
-                    $('#SeatNumber').html('<option>Loading Seats...</option>');
+                    // Hämta filmer för vald salong
+                    $('#MovieId').html('<option>Loading Movies...</option>');
+                    $.getJSON('/Movies1/GetMoviesBySalon', { salonId: salonId }, function (data) {
+                        if (data.length > 0) {
+                            var movieOptions = '<option value="">-- Select Movie --</option>';
+                            data.forEach(function (movie) {
+                                movieOptions += '<option value="' + movie.id + '">' + movie.title + '</option>';
+                            });
+                            $('#MovieId').html(movieOptions);
+                        } else {
+                            $('#MovieId').html('<option>No movies available.</option>');
+                        }
+                    });
 
-                    // Gör ett AJAX-anrop för att hämta säten
+                    // Hämta säten för vald salong
+                    $('#SeatNumber').html('<option>Loading Seats...</option>');
                     $.getJSON('/Seats/GetAvailableSeats', { salonId: salonId }, function (data) {
                         if (data.length > 0) {
-                            // Om det finns säten, fyll dropdownen
                             var seatOptions = '';
                             data.forEach(function (seatNr) {
-                                // Visa endast SeatNr
                                 seatOptions += '<option value="' + seatNr + '">' + seatNr + '</option>';
                             });
                             $('#SeatNumber').html(seatOptions);
                         } else {
-                            // Om inga säten finns, visa ett meddelande
                             $('#SeatNumber').html('<option>No available seats.</option>');
                         }
                     });
                 } else {
-                    // Om ingen salong är vald, töm sätesdropdownen
+                    $('#MovieId').html('<option>Select a salon first.</option>');
                     $('#SeatNumber').html('<option>Select a salon first.</option>');
                 }
             });

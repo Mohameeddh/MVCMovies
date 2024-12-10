@@ -42,6 +42,23 @@ namespace MVCMovies.Controllers
             return View(movies);
         }
 
+        [HttpGet]
+        public IActionResult GetMoviesBySalon(int salonId)
+        {
+            var movies = _context.Shows
+                .Where(s => s.SalonId == salonId)
+                .Include(s => s.Movie)
+                .Select(s => new
+                {
+                    id = s.Movie.Id,
+                    title = s.Movie.Title
+                })
+                .Distinct()
+                .ToList();
+
+            return Json(movies);
+        }
+
         // GET: Movies1/Details/5
         public async Task<IActionResult> Details(int? id)
         {
